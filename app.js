@@ -27,7 +27,7 @@ dotenv.load();
 app.all('*',function(req,res,next) {
     if (!req.get('Origin')) return next();
 
-    res.set('Access-Control-Allow-Origin','https://friendsseminary.myschoolapp.com/');
+    res.set('Access-Control-Allow-Origin','https://friendsseminary.myschoolapp.com');
     res.set('Access-Control-Allow-Methods','POST');
     res.set('Access-Control-Allow-Headers','X-Requested-With,Content-Type');
 
