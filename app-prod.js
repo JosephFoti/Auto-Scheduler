@@ -21,6 +21,20 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.static('public'));
 
+// CORS config
+// https://stackoverflow.com/questions/23177628/post-to-express-js-with-access-control-allow-origin
+app.all('*',function(req,res,next) {
+    if (!req.get('Origin')) return next();
+
+    res.set('Access-Control-Allow-Origin','https://friendsseminary.myschoolapp.com/');
+    res.set('Access-Control-Allow-Methods','POST');
+    res.set('Access-Control-Allow-Headers','X-Requested-With,Content-Type');
+
+    if ('OPTIONS' == req.method) return res.send(200);
+
+    next();
+});
+
 const result = dotenv.config();
 dotenv.load();
 

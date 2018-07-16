@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <style media="screen">
+
+    .schedule-wrapper{
+      width:90vw;
+      height: 90vh;
+      margin-left: 5vw;
+      margin-top: 5vh;
+    }
+
+    .column {
+      width: 12.5%;
+      height: 100%;
+      float: left;
+      box-sizing: border-box;
+      border: 1px solid grey;
+      position: relative;
+    }
+
+    .event {
+      position: absolute;
+      width: 100%;
+      padding: 5px;
+      box-sizing: border-box;
+      background-color: #ffc5c5;
+    }
+
+    </style>
+  </head>
+  <body>
+
+  <form class="selector" action="/getTeacher">
+
+    <button type="submit" name="button"></button>
+  </form>
+
+  <select id="selector" name="">
+    <option value="144963">Bram</option>
+    <option value="3639937">Kristen</option>
+    <option value="2390481">Kate</option>
+  </select>
+
+
+
+      <%- include scheduleRender.ejs %>
+
+
+  </body>
+</html>
