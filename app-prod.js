@@ -10,6 +10,8 @@ const fs = require('fs');
 const position = require('./components/positionParse.js');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
 
 app.set('view engine', 'ejs');
 
@@ -25,8 +27,6 @@ dotenv.load();
 let teacherData = [];
 
 var apiData;
-
-
 
 
 
@@ -161,6 +161,7 @@ app.get('/', (req, res) => {
   console.log('homepage');
   fs.readFile('./data/teacherIds.json', 'utf-8', (err, data) => {
     data = JSON.parse(data);
+  res.send(JSON.stringify(data));
     // res.render('selector',{data});
   });
 

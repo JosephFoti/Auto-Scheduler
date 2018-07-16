@@ -1,0 +1,73 @@
+/ https://friendsseminary.myschoolapp.com/api/DataDirect/ScheduleList/?format=json&viewerId=144929&personaId=3&viewerPersonaId=3&start=1535256000&end=1538884800&_=1531158102426
+
+// pivot json for select from roleId to baseRoleId
+// https://friendsseminary.myschoolapp.com/api/Role/AllRolesForSchool/?format=json
+
+// Gives user credentials,
+// .MasterUserInfo.UserId
+// https://friendsseminary.myschoolapp.com/api/webapp/context?_=1531158416288
+// JB |6|20|
+// JcH |5|6|7|9|20|21|22|24|
+
+
+/*
+teacher role id = 1684
+*/
+
+
+// https.post('https://friendsseminary.myschoolapp.com/api/authentication/login', {username:process.env.API_USER,password:process.env.API_PASS}, (res)=>{
+//   res.on('data',chunk=>{
+//     console.log(JSON.parse(chunk));
+//     apiData = JSON.parse(chunk);
+//   });
+//
+// // ------------------------------------
+// // Get Teachers
+// // ------------------------------------
+// res.on('end',()=>{
+//   console.log(apiData)
+//   // https.get(`https://friendsseminary.myschoolapp.com/api/news/category/all?t=${apiData.Token}`, (resp) => {
+//   https.get(`https://friendsseminary.myschoolapp.com/api/list/7439?t=${apiData.Token}`, (resp) => {
+//     let data = '';
+//
+//     // A chunk of data has been recieved.
+//     resp.on('data', (chunk) => {
+//       data += chunk;
+//     });
+//
+//     // The whole response has been received. Print out the result.
+//     resp.on('end', () => {
+//       console.log(JSON.parse(data));
+//       console.log(JSON.parse(data)[0].UserId);
+//       console.log(JSON.parse(data)[0].FirstName);
+//       console.log(JSON.parse(data)[0].LastName);
+//       data = JSON.parse(data);
+//       let container = [];
+//
+//       for (var i = 0; i < data.length; i++) {
+//
+//         let item = {};
+//
+//         // console.log('--------------------------');
+//         item.id = data[i].UserId;
+//         item.fName = data[i].FirstName;
+//         item.lName = data[i].LastName;
+//         item.name = `${item.fName} ${item.lName}`;
+//         container.push(item);
+//
+//       }
+//
+//       console.log(container);
+//       // fs.writeFile('./data/teacherIds.json',JSON.stringify(container),err=>{
+//       //   if (err) console.log(err);
+//       // });
+//     });
+//
+//   }).on("error", (err) => {
+//     console.log("Error: " + err.message);
+//   });
+//
+//
+// });
+//
+// });
