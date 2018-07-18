@@ -1,0 +1,408 @@
+<style media="screen">
+
+.schedule-wrapper {
+    width: 95%;
+    height: fit-content;
+    margin-left: 2.5%;
+    margin-top: 5%;
+    margin-bottom: 2.5%;
+    margin-right: 2.5%;
+
+}
+
+.open {
+  height: 95vh;
+  background-image: url('{aLinkToABackground}');
+  background-size: 101.1vh;
+  border-left: 1px solid gray;
+}
+
+.column {
+    width: 11.11%;
+    height: 100%;
+    float: left;
+    box-sizing: border-box;
+    border: 1px solid grey;
+    position: relative;
+    border-top: none;
+}
+
+.time-column {
+  width: 11.11%;
+  height: 106.75%;
+  float: left;
+  position: relative;
+  bottom: 2.65%;
+}
+
+.time-column .time {
+    height: 6.25%;
+    width: 100%;
+    text-align: right;
+    padding-right: 5px;
+}
+
+.event {
+    position: absolute;
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    background-color: #ffffffeb;
+    word-wrap: break-word;
+    hyphens: auto;
+    border: 1px solid #d2d2d2;
+    box-shadow: 0px 0px 10px -3px black;
+}
+
+.column-name {
+    text-align: center;
+    padding: 4px 0px;
+    position: relative;
+    top: -30px;
+}
+
+h4.nodata {
+    text-align: center;
+    font-size: 20px;
+}
+
+select {
+    width: 20%;
+    margin-left: 40%;
+    margin-top: 18px;
+  }
+
+@media screen and (max-width:1200px) {
+  .time-column {
+    width: 11.11%;
+    height: 106.75%;
+    float: left;
+    position: relative;
+    bottom: 2.65%;
+}
+
+.schedule-wrapper {
+    width: 95%;
+    margin-left: 2.5%;
+    margin-top: 5%;
+    margin-bottom: 2.5%;
+    margin-right: 2.5%;
+    background-image: url('{aLinkToABackground}');
+    background-size: 101.1vh;
+    border-left: 1px solid gray;
+    box-sizing: border-box;
+}
+
+
+}
+
+@media screen and  (max-width:980px) {
+
+  span.event-title {
+      font-size: 10px;
+      line-height: 12px !important;
+      display: block;
+  }
+
+  span.event-time {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      position: absolute;
+      bottom: 0px;
+      text-align: center;
+      width: 100%;
+      left: 0px;
+  }
+
+}
+
+</style>
+
+<div>
+<h2 style="text-align:center;">Teacher Schedules</h2>
+<h3 style="text-align:center;">Please select a name from the dropdown menu below to view a schedule.</h3>
+<div style="text-align:center;"> Note: When viewing on smaller screen sizes, you may need to scroll horizontally to see the full table.</div>
+</div>
+
+<select id="selector" name="">
+  <option disabled>Loading...</option>
+</select>
+
+<div class="schedule-wrapper">
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script>
+
+var token;
+
+$("document").ready(function(){
+console.log('get teachers');
+
+$.post('https://{yourSchool}.myschoolapp.com/api/authentication/login',{username:'yourUsername',password:'yourPassword'},(data) => {
+
+  // tolken get
+  token = data.Token;
+
+  $.ajax({
+    url: `https://{yourSchool}.myschoolapp.com/api/user/all?t=${token}&roleIDs=1684`,
+    type: 'GET'
+  })
+  .done(function(data) {
+
+      let html = '';
+      html += '<option>Please select a name</option>';
+
+      for (var i = 0; i < data.length; i++) {
+
+        let item = {};
+
+        item.id = data[i].UserId;
+        item.fName = data[i].FirstName;
+        item.lName = data[i].LastName;
+        item.name = `${item.fName} ${item.lName}`;
+        html += `<option value="${item.id}" data-index="${i}">${item.name}</option>`
+
+      }
+
+      $('#selector').html(html);
+
+    console.log("success");
+  })
+  .fail(function(err) {
+    console.log(err);
+    console.log("error");
+  })
+  .always(function() {
+    console.log("complete");
+  });
+
+});
+
+});
+
+
+
+$('#selector').change(function(e){
+
+ let chosenUser = e.target.value;
+
+ $.ajax({
+   url:  `https://{yourSchool}.myschoolapp.com/api/DataDirect/ScheduleList/?format=json&viewerId=${chosenUser}&personaId=3&viewerPersonaId=3&start=1535256000&end=1538884800&t=${token}`,
+   type: `GET`,
+ })
+ .done(function(rawData) {
+   // console.log(rawData);
+   console.log("success");
+
+   let block = {};
+   let reg = new RegExp(/Day \d/);
+   let currentEffectiveCycle;
+
+   for (var i = 0; i < rawData.length; i++) {
+
+     // test if event title is a day name, if it is add it to the block
+     if (reg.test(rawData[i].title)) {
+
+       // string conversion from day # (m) to day#
+       let displayTitle = rawData[i].title.slice(0, 5);
+       let division = rawData[i].title.slice(6);
+       shortTitle = displayTitle.split(' ').join('');
+
+       // if the day name doesnt exist yet, add it and move on...
+       if (!block[shortTitle]) {
+
+         console.log(`${shortTitle} is currentEffectiveCycle`);
+         // DISPLAY title added for rendering days properly,
+         // EVENTS is an array that will contain all the scheduled
+         // objects. DIVISION tests if the cycle day has actually been
+         // repeated or if there are two different types of day.
+
+         block[shortTitle] = rawData[i];
+         block[shortTitle]["title"] = displayTitle;
+         block[shortTitle]["events"] = [];
+         block[shortTitle]["division"] = division;
+         currentEffectiveCycle = shortTitle;
+         continue;
+
+       } else if (block[shortTitle]["division"] !== division) {
+         // if the day already exists but has a different division value
+         // continue looop
+         continue;
+
+       }
+
+       // if the day name has already been saved then we are done, break
+       // the loop!
+       console.log(`about to break loop with ${shortTitle} for date ${rawData[i].start}`);
+
+       break;
+
+     } else if (rawData[i].start.split(' ')[1] === "12:00" && rawData[i].start.split(' ')[2] === "AM") {
+       // if its an all day event (starts at 12AM) and is not a cycle day ignore it!
+       continue;
+     }
+
+     // Call the position parser component to calculate relative positions in the future schedule
+     // and adds time detailing
+     let thisPosition = parsePosition(rawData[i]);
+     rawData[i].position = thisPosition;
+
+     // all else push to what ever day last became the effective cycle day.
+     block[currentEffectiveCycle]["events"].push(rawData[i]);
+
+   }
+
+   let keys = Object.keys(block);
+   block.keys = keys;
+
+   console.log(block);
+   clientRender(block, keys);
+
+ })
+ .fail(function(err) {
+   console.log(err);
+   console.log("error");
+ })
+ .always(function() {
+   console.log("complete");
+ });
+
+
+});
+
+
+// take times and convert them into relative percents of the height of the calendar
+
+function parsePosition(eventObject){
+
+
+  // total timespan to be displayed by calendar
+  const total = 7.5;
+
+  // start time and end time values in data
+  let start = eventObject.start.split(' ')
+  let end =  eventObject.end.split(' ')
+
+
+  //start parse
+  let startTime = start[1].split(':');
+  // convert base 24 time
+  let startHour = start[2] === 'AM' || parseInt(startTime[0]) === 12 ? parseInt(startTime[0]) : parseInt(startTime[0]) + 12;
+  let startMin = parseInt(startTime[1]);
+
+
+  let weightedStart = (startHour - 8) + (1.67 * (startMin/100));
+
+
+  // end parse
+  let endTime = end[1].split(':');
+  // convert base 24 time
+  let endHour = end[2] === 'AM' || parseInt(endTime[0]) === 12 ? parseInt(endTime[0]) : parseInt(endTime[0]) + 12;
+  let endMin = parseInt(endTime[1]);
+
+  let weightedEnd = (endHour - 8) + (1.67 * (endMin/100));
+
+  let top = (Math.abs((Math.abs(weightedStart-total)/total) - 1)).toFixed(3);
+  let height = ((weightedEnd - weightedStart)/total).toFixed(3);
+
+  // returns an object of extra data for rendering to be added to each event object
+  return {
+    top:top,
+    height:height,
+    simpleTimes: {
+      start: start[1],
+      end: end[1]
+    }
+  }
+};
+
+function clientRender(block, keys) {
+
+  // clientRender loops through the data reported from the API and creates the
+  // html elements. It also checks for empty days and adds empty coloumns to
+  // keep the spacing consistant
+
+  let days = ['Day 1','Day 2','Day 3','Day 4','Day 5','Day 6','Day 7','Day 8'];
+  let html = '';
+  let dayCount = -1;
+  let currentDayTitle = ''
+
+  html += `
+  <div class="time-column">
+  <div class="time">8 AM</div>
+  <div class="time">8:30 AM</div>
+  <div class="time">9 AM</div>
+  <div class="time">9:30 AM</div>
+  <div class="time">10 AM</div>
+  <div class="time">10:30 AM</div>
+  <div class="time">11 AM</div>
+  <div class="time">11:30 AM</div>
+  <div class="time">12 AM</div>
+  <div class="time">12:30 AM</div>
+  <div class="time">1 PM</div>
+  <div class="time">1:30 PM</div>
+  <div class="time">2 PM</div>
+  <div class="time">2:30 PM</div>
+  <div class="time">3 PM</div>
+  <div class="time">3:30 PM</div>
+  </div>
+  `
+
+  for (var i = 0; i < keys.length; i++) {
+    const day = block[keys[i]];
+    let currentDayTitle = day.title;
+
+    // runs when a cycle day is missing from the array of rendered cycle days
+    // (because a teacher doesnt teach on that day) and adds an empty space
+    function fillGaps(x) {
+      dayCount++;
+      if (x !== days[dayCount]) {
+        html += `<div class='column'><div class='column-name'>${days[dayCount]}</div></div>`;
+        fillGaps(x);
+      }
+    }
+
+    fillGaps(currentDayTitle);
+
+    html += `<div class='column'><div class='column-name'>${day.title}</div>`
+
+    for (var j = 0; j < day.events.length; j++) {
+      let event = day.events[j];
+      html += `<div class="event" style="top:${(event.position.top*100)+'%'};height:${(event.position.height*100)+'%'};"><span class="event-title">${event.title}</span><br/><span class="event-time">${event.position.simpleTimes.start} - ${event.position.simpleTimes.end}</span></div>`
+
+    }
+    html += `</div>`
+  }
+
+  if (keys.length === 0) {
+
+    $('.schedule-wrapper').removeClass('open');
+    $('.schedule-wrapper').html('<h4 class="nodata">Yikes, no relevant schedule data present!</h4>');
+    return;
+
+  } else {
+
+    let balancedWidth = 100/keys.length;
+    $('.column').css('width',balancedWidth+'%');
+
+  }
+
+  while (dayCount<7) {
+
+    dayCount++
+    html += `<div class='column'><div class='column-name'>${days[dayCount]}</div></div>`;
+
+  }
+
+  $('.schedule-wrapper').addClass('open');
+  $('.schedule-wrapper').html(html);
+
+
+}
+
+
+
+</script>
