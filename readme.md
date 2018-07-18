@@ -4,13 +4,13 @@ Greetings fellow coder,
 
 What follows is an example process for using the blackbaud ON-API to access teacher schedules and display them on a back-end page. The schedules are mapped to an 8-day cycle calendar.
 
-When I sarted this project, I wanted to use a proxy server to host the api requests and process data, but I didn't feel so comfortable configuring CORS and was afraid of leaking data and being responsable for a hack, so I decided to keep it local. The html file includes all my scripts and styles which can be inserted into the back end through an embed tag (_Note: Blackbaud probably will not help you with anything you stick in there_). 
+When I sarted this project, I wanted to use a proxy server to host the api requests and process data, but I didn't feel so comfortable configuring CORS and was afraid of leaking data and being responsable for a hack, so I decided to keep it local. The html file includes all my scripts and styles which can be inserted into the back end through an embed tag (_Note: Blackbaud probably will not help you with anything you stick in there_).
 
 
 ## Summary of Code
 
 1. Get API Token.
-  - As detailed in the [ON-API getting started guide][http://on-api.developer.blackbaud.com/docs/getting-started/] step one is to use a post with log-in credentials for a blackbaud user with the role API Manager
+  - As detailed in the [ON-API getting started guide](http://on-api.developer.blackbaud.com/docs/getting-started/) step one is to use a post with log-in credentials for a blackbaud user with the role API Manager
 
   ```javascript
 
@@ -80,4 +80,4 @@ When I sarted this project, I wanted to use a proxy server to host the api reque
     - The rest of my code is specific to formating rendering my calendar with javascript/jquery. I left comments if you want to learn more.
 
 
-  [ON-API Docs][http://on-api.developer.blackbaud.com/]
+  [ON-API Docs](http://on-api.developer.blackbaud.com/)
